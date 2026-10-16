@@ -43,7 +43,7 @@ router.post('/signup', async (req, res) => {
         await newUser.save();
 
         // Generate JWT token
-        const token = jwt.sign({ id: newUser._id }, 'mysecretkey123', { expiresIn: '1h' });
+        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Send success response with token
         res.status(201).json({ message: 'User signed up successfully!', token });
@@ -63,26 +63,18 @@ router.post('/login', async (req, res) => {
         
 
         if (!user) {
-            console.log("hi")
             return res.status(400).json({ error: 'Invalid username or password' });
         }
 
-        // Debugging: Log the user object and the password entered
-        console.log("User from DB:", user);
-        console.log("Entered Password:", password);
-
         // Compare the provided password (plain text) with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
-
-        // Debugging: Log the result of the password comparison
-        console.log("Password match result:", isMatch);
 
         if (!isMatch) {
             return res.status(400).json({ error: 'Invalid username or password' });
         }
 
         // Generate JWT token
-        const token = jwt.sign({ id: user._id }, 'mysecretkey123', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Send success response with token
         res.json({ message: 'Login successful!', token });
@@ -100,7 +92,7 @@ const authenticate = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, 'mysecretkey123');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded; // Add user info to request object
         next(); // Proceed to the next middleware/route handler
     } catch (error) {
@@ -116,7 +108,7 @@ router.get('/stats', authenticate, async (req, res) => {
     }
 
     const token = authHeader.split(' ')[1]; // Format: "Bearer <token>"
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mysecretkey123'); // Use your secret key
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Fetch user stats from the database
     const userId = decoded.id; // Assuming the token contains `id`

@@ -1,5 +1,39 @@
-node_modules
-dist
-.vscode
-.DS_Store
+# Dependencies
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Environment & secrets (NEVER push these)
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Build output
+dist/
+build/
+out/
+*.class
+
+# Logs
+*.log
+npm-debug.log*
+
+# Duplicate nested copy of the project
+chess-homepage/
+
+# Stockfish NNUE network file (38 MB, download separately - see README)
+*.nnue
+
+# User-uploaded files (keep the folder itself)
+uploads/*
+!uploads/.gitkeep
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
